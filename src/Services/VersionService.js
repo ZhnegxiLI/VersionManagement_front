@@ -3,15 +3,17 @@ import http from './http.js'
 
 export const VersionService = {
     GetVersionList(param) {
-       return http('get', '/Version/GetVersionList', param);
+        return http('get', '/Version/GetVersionList', param);
     },
-
+    GetDeploimentHistory(param) {
+        return http('get', '/Version/GetDeploimentHistory', param);
+    },
     GetProjetList(param) {
         return http('get', '/Version/GetProjetList', param);
-     },
-     GetEnvironmentList(){
+    },
+    GetEnvironmentList() {
         return http('get', '/Version/GetEnvironmentList', null);
-     },
+    },
     CreateProjet(param) {
         return http('post', '/Version/CreateProjet', param);
     },

@@ -21,9 +21,12 @@
           </select>
         </div>
 
-             <div class="form-group">
+        <div class="form-group">
           <label>Deccription</label>
-          <textarea v-model="targetProjet.Description"></textarea>
+          <textarea
+            v-model="targetProjet.Description"
+            class="form-control"
+          ></textarea>
         </div>
 
         <div class="form-group">
@@ -34,49 +37,92 @@
             </option>
           </select>
         </div>
-
-        <div>
-          <div class="form-group">
-            <label>VersionNumber</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="targetProjet.VersionNumber"
-            />
-          </div>
-          <button
-            class="btn btn-primary"
-            @click="AddVersion"
-            v-if="!IsNewProjet && IsParentProjet"
-          >
-            Add version
-          </button>
-          <table>
-            <thead>
-              <tr>
-                <th>Version</th>
-                <th>CreatedOn</th>
-              </tr>
-            </thead>
-            <template v-if="targetProjet.Versions.length == 0">
-              <tr>
-                <td>NoData</td>
-              </tr>
-            </template>
-            <template v-else>
-              <tr v-for="version in targetProjet.Versions" :key="version.Id">
-                <td>{{ version.VersionNumber }}}</td>
-                <td>{{ version.CreatedOn }}}</td>
-              </tr>
-            </template>
-            <tbody>
-              <tr></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <button class="btn btn-primary" @click="saveProjet()">Save</button>
       </div>
+
+      <button class="btn btn-primary" @click="saveProjet()">Save</button>
+    </div>
+
+    <div class="col-sm-6">
+      <div class="form-group">
+        <label>VersionNumber</label>
+        <input type="text" class="form-control" v-model="VersionNumber" />
+      </div>
+      <button
+        class="btn btn-primary"
+        @click="AddVersion()"
+        v-if="!IsNewProjet && IsParentProjet"
+      >
+        Add version
+      </button>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Version</th>
+            <th>CreatedOn</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-if="targetProjet.Versions.length == 0">
+            <tr>
+              <td colspan="2">NoData</td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr v-for="version in targetProjet.Versions" :key="version.Id">
+              <td>{{ version.VersionNumber }}</td>
+              <td>{{ $filters.DateFormat(version.CreatedOn) }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <table class="table table-striped" v-if="IsParentProjet">
+        <thead>
+          <tr>
+            <th>SubProjetName</th>
+            <th>CreatedOn</th>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-if="SubProjetList.length == 0">
+            <tr>
+              <td colspan="2">NoData</td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr v-for="subProjet in SubProjetList" :key="subProjet.Id">
+              <td>{{ subProjet.Name }}</td>
+              <td>{{ $filters.DateFormat(subProjet.CreatedOn) }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+      <table v-if="!IsNewProjet" class="table table-striped">
+        <thead>
+          <tr>
+            <td>ProjetName</td>
+            <td>EnvironmentName</td>
+            <td>DeploimentVersion</td>
+            <td>CreatedOn</td>
+          </tr>
+        </thead>
+        <tbody>
+          <template v-if="deploimentList.length == 0">
+            <tr>
+              <td colspan="4">NoData</td>
+            </tr>
+          </template>
+          <template v-else>
+            <tr v-for="deploiment in deploimentList" :key="deploiment.Id">
+              <td>{{ deploiment.ProjetName }}</td>
+              <td>{{ deploiment.EnvironmentName }}</td>
+              <td>{{ deploiment.VersionNumber }}</td>
+              <td>{{ $filters.DateFormat(deploiment.CreatedOn) }}</td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
@@ -89,6 +135,8 @@ export default {
   name: "Projet",
   data() {
     return {
+      projetList: [],
+      deploimentList: [],
       VersionNumber: null,
       envList: [],
       envIds: [],
@@ -105,18 +153,25 @@ export default {
     async GetProjetList() {
       this.projetList = await VersionService.GetProjetList(null);
 
-      if (this.Id != null && this.Id > 0) {
-        this.targetProjet = this.projetList.find((p) => p.Id == this.Id);
+      if (this.targetProjet.Id != null && this.targetProjet.Id > 0) {
+        this.targetProjet = this.projetList.find(
+          (p) => p.Id == this.targetProjet.Id
+        );
       }
     },
-
+    async GetDeploimentHistory() {
+      if (!this.IsNewProjet) {
+        this.deploimentList = await VersionService.GetDeploimentHistory({
+          ParentId: this.IsParentProjet ? this.targetProjet.Id : null,
+          ProjetId: !this.IsParentProjet ? this.targetProjet.Id : null,
+        });
+      }
+    },
     async GetEnvironment() {
       this.envList = await VersionService.GetEnvironmentList();
     },
     async AddVersion() {
-      if (
-        this.VersionNumber != null && !IsNewProjet
-      ) {
+      if (this.VersionNumber != null && !this.IsNewProjet) {
         let result = await VersionService.CreateVersion({
           VersionNumber: this.VersionNumber,
           ProjetId: this.targetProjet.Id,
@@ -128,7 +183,6 @@ export default {
       }
     },
     async saveProjet() {
-      console.log(this.targetProjet);
       let ProjetEnvironments = [];
       for (let envId of this.envIds) {
         ProjetEnvironments.push(envId);
@@ -140,8 +194,8 @@ export default {
 
           Name: this.targetProjet.Name,
           ParentId: this.targetProjet.ParentId,
-          Description :  this.targetProjet.Description,
-          EnvIds: ProjetEnvironments
+          Description: this.targetProjet.Description,
+          EnvIds: ProjetEnvironments,
         });
         if (result > 0) alert("Saved successfully");
       } else {
@@ -150,25 +204,32 @@ export default {
     },
   },
   mounted() {
-    this.GetProjetList();
-    this.GetEnvironment();
     const route = useRoute();
     if (route.query != null && route.query.Id != null && route.query.Id > 0) {
-      this.Id = parseInt(route.query.Id);
+      this.targetProjet.Id = parseInt(route.query.Id);
     }
+
+    this.GetDeploimentHistory();
+    this.GetProjetList();
+    this.GetEnvironment();
   },
   computed: {
     MainProjetList: function () {
       return this.projetList.filter(
-        (p) => p.ParentId == null && p.Id != this.Id
+        (p) => p.ParentId == null && p.Id != this.targetProjet.Id
       );
     },
     IsNewProjet() {
       return !(this.targetProjet.Id != null && this.targetProjet.Id > 0);
     },
-    IsParentProjet(){
-      return !(this.targetProjet.ParentId!=null &&  this.targetProjet.ParentId >0);
-    }
+    IsParentProjet() {
+      return !(
+        this.targetProjet.ParentId != null && this.targetProjet.ParentId > 0
+      );
+    },
+    SubProjetList() {
+      return this.projetList.filter((p) => p.ParentId == this.targetProjet.Id);
+    },
   },
 };
 </script>

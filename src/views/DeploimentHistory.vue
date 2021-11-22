@@ -1,13 +1,13 @@
 <template>
   <button @click="createVersion()" class="btn btn-primary">Open modal</button>
-
+<!-- 
   <modal
     :showModal="showModal"
     @close="showModal = false"
     @confirm="showModal = false"
   >
     <div>test123456</div>
-  </modal>
+  </modal> -->
   <table class="table table-striped">
     <tbody>
       <template v-for="projet in ProjetVersionList" :key="projet.Id">
@@ -47,8 +47,8 @@
             }}
             -
             {{
-              getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id)
-                .CreatedOn
+             $filters.DateFormat( getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id)
+                .CreatedOn)
             }}
           </td>
         </tr>
@@ -58,7 +58,7 @@
 </template>
 <script>
 import VersionServices from "../Services/VersionService.js";
-import Modal from "../components/Modal.vue";
+//import Modal from "../components/Modal.vue";
 export default {
   data: function () {
     return {
@@ -67,7 +67,7 @@ export default {
     };
   },
   components: {
-    Modal,
+   // Modal,
   },
   methods: {
     async GetVersionList() {
