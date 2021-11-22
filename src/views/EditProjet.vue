@@ -21,6 +21,11 @@
           </select>
         </div>
 
+             <div class="form-group">
+          <label>Deccription</label>
+          <textarea v-model="targetProjet.Description"></textarea>
+        </div>
+
         <div class="form-group">
           <label>Environment</label>
           <select class="form-control" multiple v-model="envIds">
@@ -31,6 +36,21 @@
         </div>
 
         <div>
+          <div class="form-group">
+            <label>VersionNumber</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="targetProjet.VersionNumber"
+            />
+          </div>
+          <button
+            class="btn btn-primary"
+            @click="AddVersion"
+            v-if="!IsNewProjet && IsParentProjet"
+          >
+            Add version
+          </button>
           <table>
             <thead>
               <tr>
@@ -45,8 +65,8 @@
             </template>
             <template v-else>
               <tr v-for="version in targetProjet.Versions" :key="version.Id">
-                <td>{{version.VersionNumber}}} </td>
-                <td>{{version.CreatedOn}}} </td>
+                <td>{{ version.VersionNumber }}}</td>
+                <td>{{ version.CreatedOn }}}</td>
               </tr>
             </template>
             <tbody>
@@ -69,16 +89,14 @@ export default {
   name: "Projet",
   data() {
     return {
-      Name: "",
-      MainProjetId: null,
-      projetList: [],
-      Id: null,
+      VersionNumber: null,
       envList: [],
       envIds: [],
       targetProjet: {
         Id: null,
         Name: null,
         ParentId: null,
+        Description: null,
         Versions: [],
       },
     };
@@ -95,7 +113,20 @@ export default {
     async GetEnvironment() {
       this.envList = await VersionService.GetEnvironmentList();
     },
+    async AddVersion() {
+      if (
+        this.VersionNumber != null && !IsNewProjet
+      ) {
+        let result = await VersionService.CreateVersion({
+          VersionNumber: this.VersionNumber,
+          ProjetId: this.targetProjet.Id,
+        });
 
+        if (result > 0) {
+          alert("create version successfully");
+        }
+      }
+    },
     async saveProjet() {
       console.log(this.targetProjet);
       let ProjetEnvironments = [];
@@ -109,7 +140,8 @@ export default {
 
           Name: this.targetProjet.Name,
           ParentId: this.targetProjet.ParentId,
-          EnvIds: ProjetEnvironments,
+          Description :  this.targetProjet.Description,
+          EnvIds: ProjetEnvironments
         });
         if (result > 0) alert("Saved successfully");
       } else {
@@ -131,6 +163,12 @@ export default {
         (p) => p.ParentId == null && p.Id != this.Id
       );
     },
+    IsNewProjet() {
+      return !(this.targetProjet.Id != null && this.targetProjet.Id > 0);
+    },
+    IsParentProjet(){
+      return !(this.targetProjet.ParentId!=null &&  this.targetProjet.ParentId >0);
+    }
   },
 };
 </script>

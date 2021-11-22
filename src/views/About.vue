@@ -1,27 +1,55 @@
 <template>
   <button @click="createVersion()" class="btn btn-primary">Open modal</button>
 
-  <modal :showModal="showModal" @close="showModal = false" @confirm=" showModal = false">
+  <modal
+    :showModal="showModal"
+    @close="showModal = false"
+    @confirm="showModal = false"
+  >
     <div>test123456</div>
   </modal>
   <table class="table table-striped">
     <tbody>
       <template v-for="projet in ProjetVersionList" :key="projet.Id">
         <tr>
-          <td :colspan="projet.SubProjet.length + 1">{{ projet.Name }}</td>
+          <td :colspan="projet.SubProjet.length + 1">
+            <router-link
+              :to="{
+                name: 'EditProjet',
+                query: {
+                  Id: projet.Id,
+                },
+              }"
+              >{{ projet.Name }}</router-link
+            >
+          </td>
         </tr>
         <tr>
           <td></td>
           <td v-for="subProjet in projet.SubProjet" :key="subProjet.Id">
-            {{ subProjet.Name }}
+            <router-link
+              :to="{
+                name: 'EditProjet',
+                query: {
+                  Id: subProjet.Id,
+                },
+              }"
+              >{{ subProjet.Name }}</router-link
+            >
           </td>
         </tr>
         <tr v-for="env in getProjetEnv(projet.Id)" :key="env.Id">
           <td>{{ env.Name }}</td>
           <td v-for="subProjet in projet.SubProjet" :key="subProjet.Id">
             {{
-              getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id).VersionNumber
-            }} - {{getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id).CreatedOn}}
+              getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id)
+                .VersionNumber
+            }}
+            -
+            {{
+              getTargetVersionByProjetIdAndEnv(projet.Id, subProjet.Id, env.Id)
+                .CreatedOn
+            }}
           </td>
         </tr>
       </template>
@@ -38,16 +66,15 @@ export default {
       showModal: false,
     };
   },
-  components:{
-      Modal
+  components: {
+    Modal,
   },
   methods: {
     async GetVersionList() {
       this.ProjetVersionList = await VersionServices.GetVersionList(null);
     },
-    createVersion(){
+    createVersion() {
       this.showModal = true;
-
     },
     getProjetEnv(projetId) {
       let envList = [];
