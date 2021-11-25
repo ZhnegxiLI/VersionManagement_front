@@ -10,8 +10,15 @@
               <!-- TODO USE THE SAME LIST FOR SIDE BAR -->
               <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
-                  <li class="breadcrumb-item"><a href="#">Home</a></li>
-                  <li class="breadcrumb-item active">Dashboard v1</li>
+                  <li class="breadcrumb-item" v-for="menu in menuList" :key="menu.name">
+                 
+                     <router-link
+                  :to="menu.url"
+                  class="nav-link"
+                  active-class="active"
+                ></router-link>
+                    </li>
+                  <!-- <li class="breadcrumb-item active">Dashboard v1</li> -->
                 </ol>
               </div>
               <!-- /.col -->
@@ -24,8 +31,14 @@
 </template>
 
 <script>
-export default {
 
+import { menuList } from "../Utils/Constants.js";
+export default {
+  data(){
+    return  {
+      menuList
+    }
+  }
 }
 </script>
 

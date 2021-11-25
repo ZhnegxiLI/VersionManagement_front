@@ -55,7 +55,7 @@
         >
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
-               <!-- TODO TRANSFER THIS PART INTO A LIST AND RETRIVE INFO IN THIS LIST  -->
+          <!-- TODO TRANSFER THIS PART INTO A LIST AND RETRIVE INFO IN THIS LIST  -->
           <li class="nav-item menu-open">
             <a href="#" class="nav-link active">
               <i class="nav-icon fas fa-tachometer-alt"></i>
@@ -65,24 +65,17 @@
               </p>
             </a>
             <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <router-link to="/DeploimentHistory" class="nav-link" active-class="active">
+              <li class="nav-item" v-for="menu in menuList" :key="menu.name">
+                <router-link
+                  :to="menu.url"
+                  class="nav-link"
+                  active-class="active"
+                >
                   <i class="far fa-circle nav-icon"></i>
-                  <p>DeploimentHistory</p>
+                  <p>{{ menu.name }}</p>
                 </router-link>
               </li>
-              <li class="nav-item">
-                <router-link to="/projet" class="nav-link" active-class="active">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>projet</p>
-                </router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/" class="nav-link" active-class="active">
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>Home</p>
-                </router-link>
-              </li>
+              
             </ul>
           </li>
         </ul>
@@ -94,7 +87,14 @@
 </template>
 
 <script>
-export default {};
+import { menuList } from "../Utils/Constants.js";
+export default {
+  data() {
+    return {
+      menuList,
+    };
+  },
+};
 </script>
 
 <style>

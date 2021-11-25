@@ -11,6 +11,7 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import {faLock, faEnvelope} from '@fortawesome/free-solid-svg-icons';
 import {faFacebook, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
+import { initializeSelect2 } from './Utils/SharedControl'
 
 
 //import adminlte scripts
@@ -56,12 +57,14 @@ dom.watch();
 
 var app = createApp(App)
 
-app.config.globalProperties.$DateFormat = DateFormat;
 
 app.config.globalProperties.$filters = {
     DateFormat(value) {
       return DateFormat(value)
     }
 }
+app.config.globalProperties.$sharedControl = {
+  initializeSelect2
+} 
 
 app.component("font-awesome-icon", FontAwesomeIcon).use(router).mount('#app')
