@@ -39,7 +39,6 @@ export default {
   name: "App",
   components: {
     Preloader,
-    // ContentHeader,
     // ExampleForm,
     Navbar,
     Sidebar,

@@ -49,7 +49,7 @@ import "../node_modules/admin-lte/plugins/bootstrap4-duallistbox/bootstrap-duall
 import "../node_modules/admin-lte/plugins/bs-stepper/css/bs-stepper.min.css"
 import "../node_modules/admin-lte/plugins/dropzone/min/dropzone.min.css"
 
-
+import ContentHeader from './dashboard/ContentHeader.vue'
 window.$ = window.jQuery = require("jquery");
 
 library.add(fas, fab, far, faLock, faEnvelope, faFacebook, faGooglePlus);
@@ -67,4 +67,4 @@ app.config.globalProperties.$sharedControl = {
   initializeSelect2
 } 
 
-app.component("font-awesome-icon", FontAwesomeIcon).use(router).mount('#app')
+app.component("font-awesome-icon", FontAwesomeIcon).use(router).component('ContentHeader',ContentHeader).mount('#app')

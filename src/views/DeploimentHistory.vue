@@ -89,10 +89,8 @@
 </template>
 <script>
 import VersionServices from "../Services/VersionService.js";
-import ContentHeader from "../dashboard/ContentHeader.vue";
 //import Modal from "../components/Modal.vue";
 export default {
-  components: { ContentHeader },
   data: function () {
     return {
       ProjetVersionList: [],

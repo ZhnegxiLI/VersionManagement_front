@@ -10,4 +10,5 @@ const initializeSelect2 = function () {
     });
 }
 
+
 export { initializeSelect2 }
