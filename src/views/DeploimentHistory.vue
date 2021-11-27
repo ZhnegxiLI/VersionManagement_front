@@ -2,6 +2,7 @@
   <ContentHeader>Projet</ContentHeader>
 
   <section class="content">
+     <template v-for="projet in ProjetVersionList" :key="projet.Id">
     <div class="card">
       <div class="card-header">
         <h3 class="card-title">Projects</h3>
@@ -18,28 +19,20 @@
         </div>
       </div>
       <div class="card-body p-0">
-        <table class="table table-striped projects">
-          <thead>
-            <tr>
-              <th style="width: 1%">#</th>
-              <th style="width: 20%">Project Name</th>
-            </tr>
-          </thead>
-          <tbody>
-            <template v-for="projet in ProjetVersionList" :key="projet.Id">
-              <tr>
-                <td :colspan="projet.SubProjet.length + 1" style="text-align:center">
-                  <router-link
-                    :to="{
-                      name: 'EditProjet',
-                      query: {
-                        Id: projet.Id,
-                      },
-                    }"
-                    >{{ projet.Name }}</router-link
-                  >
-                </td>
-              </tr>
+       
+          <h3 class="mainProjetTitle">
+            <router-link
+              :to="{
+                name: 'EditProjet',
+                query: {
+                  Id: projet.Id,
+                },
+              }"
+              >{{ projet.Name }}</router-link
+            >
+          </h3>
+          <table class="table table-striped projects">
+            <tbody>
               <tr>
                 <td></td>
                 <td v-for="subProjet in projet.SubProjet" :key="subProjet.Id">
@@ -63,10 +56,10 @@
                         projet.Id,
                         subProjet.Id,
                         env.Id
-                      ).VersionNumber?? '--'
+                      ).VersionNumber ?? "--"
                     }}
                   </a>
-                  <br>
+                  <br />
                   <small>
                     {{
                       $filters.DateFormat(
@@ -75,16 +68,16 @@
                           subProjet.Id,
                           env.Id
                         ).CreatedOn
-                      )??'--'
+                      ) ?? "--"
                     }}
                   </small>
                 </td>
               </tr>
-            </template>
-          </tbody>
-        </table>
+            </tbody>
+          </table>
       </div>
     </div>
+         </template>
   </section>
 </template>
 <script>
@@ -157,3 +150,8 @@ export default {
   },
 };
 </script>
+<style>
+  .mainProjetTitle{
+    text-align: center;
+  }
+</style>

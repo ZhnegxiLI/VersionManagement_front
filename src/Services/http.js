@@ -1,5 +1,7 @@
 import axios from 'axios'
 
+import {showErrorToast} from '../Utils/SharedControl'
+
 //创建axios的一个实例 
 var instance = axios.create({
     baseURL:'https://localhost:44350/',// todo set to the baseUrl from env
@@ -22,6 +24,8 @@ instance.interceptors.response.use(function (response) {
     
     return response.data;
 }, function (error) {
+
+    showErrorToast('Some errors occur', 'There are some errors occur, please contact our technical team or retry later')
     // 对响应错误做点什么
     return Promise.reject(error);
 });

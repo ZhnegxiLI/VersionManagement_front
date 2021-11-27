@@ -2,14 +2,14 @@
   <!-- Main Sidebar Container -->
   <aside class="main-sidebar sidebar-dark-primary elevation-4">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="/" class="brand-link">
       <img
         src="../assets/img/AdminLTELogo.png"
         alt="AdminLTE Logo"
         class="brand-image img-circle elevation-3"
         style="opacity: 0.8"
       />
-      <span class="brand-text font-weight-light">AdminLTE 3</span>
+      <span class="brand-text font-weight-light">Projet management 3</span>
     </a>
 
     <!-- Sidebar -->
@@ -24,7 +24,7 @@
           />
         </div>
         <div class="info">
-          <a href="#" class="d-block">Carlos Carvalho</a>
+          <a href="#" class="d-block">Manager</a>
         </div>
       </div>
 
@@ -53,31 +53,19 @@
           role="menu"
           data-accordion="false"
         >
-          <!-- Add icons to the links using the .nav-icon class
-               with font-awesome or any other icon font library -->
-          <!-- TODO TRANSFER THIS PART INTO A LIST AND RETRIVE INFO IN THIS LIST  -->
-          <li class="nav-item menu-open">
-            <a href="#" class="nav-link active">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-                <i class="right fas fa-angle-left"></i>
-              </p>
-            </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item" v-for="menu in menuList" :key="menu.name">
-                <router-link
-                  :to="menu.url"
-                  class="nav-link"
-                  active-class="active"
-                >
-                  <i class="far fa-circle nav-icon"></i>
-                  <p>{{ menu.name }}</p>
-                </router-link>
-              </li>
-              
-            </ul>
-          </li>
+          <ul class="nav ">
+            <li class="nav-item" v-for="menu in menuList" :key="menu.name">
+              <router-link
+                :to="menu.url"
+                class="nav-link"
+                active-class="active"
+              >
+                <i :class="menu.icon" style="margin-right: 5px;"></i>
+                <p>{{ menu.name }}</p>
+              </router-link>
+            </li>
+            
+          </ul>
         </ul>
       </nav>
       <!-- /.sidebar-menu -->

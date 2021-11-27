@@ -11,12 +11,12 @@ import { fab } from '@fortawesome/free-brands-svg-icons';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import {faLock, faEnvelope} from '@fortawesome/free-solid-svg-icons';
 import {faFacebook, faGooglePlus} from '@fortawesome/free-brands-svg-icons';
-import { initializeSelect2 } from './Utils/SharedControl'
 
 
 //import adminlte scripts
+import Select2 from 'vue3-select2-component';
+
 import "../node_modules/admin-lte/dist/js/adminlte.min.js"
-import "../node_modules/admin-lte/plugins/select2/js/select2.full.min.js"
 import "../node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js"
 import "../node_modules/admin-lte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"
 //import "../node_modules/admin-lte/plugins/summernote/summernote-bs4.min.js"
@@ -63,8 +63,6 @@ app.config.globalProperties.$filters = {
       return DateFormat(value)
     }
 }
-app.config.globalProperties.$sharedControl = {
-  initializeSelect2
-} 
 
-app.component("font-awesome-icon", FontAwesomeIcon).use(router).component('ContentHeader',ContentHeader).mount('#app')
+
+app.component("font-awesome-icon", FontAwesomeIcon).component('Select2',Select2).use(router).component('ContentHeader',ContentHeader).mount('#app')

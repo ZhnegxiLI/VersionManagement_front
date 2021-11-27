@@ -14,6 +14,9 @@ export const VersionService = {
     GetEnvironmentList() {
         return http('get', '/Version/GetEnvironmentList', null);
     },
+    GetVersionByProjetId(param){
+        return http('get','/Version/GetVersionByProjetId', param);
+    },
     CreateProjet(param) {
         return http('post', '/Version/CreateProjet', param);
     },

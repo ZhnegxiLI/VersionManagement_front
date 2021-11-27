@@ -1,5 +1,7 @@
 <template>
-  <ContentHeader>Edit projet</ContentHeader>
+  <ContentHeader>{{
+    IsNewProjet ? "Create projet" : "Edit projet"
+  }}</ContentHeader>
   <section class="content">
     <div class="row">
       <div class="col-6">
@@ -30,19 +32,10 @@
 
             <div class="form-group">
               <label>MainProjet</label>
-              <select
-                class="form-control select2"
-                v-model="targetProjet.ParnetId"
-              >
-                <option value="-1"></option>
-                <option
-                  v-for="mainProjet in MainProjetList"
-                  :key="mainProjet.Id"
-                  :value="mainProjet.Id"
-                >
-                  {{ mainProjet.Name }}
-                </option>
-              </select>
+              <Select2
+                v-model="targetProjet.ParentId"
+                :options="MainProjetList"
+              />
             </div>
 
             <div class="form-group">
@@ -55,18 +48,24 @@
 
             <div class="form-group">
               <label>Environment</label>
-              <select class="form-control select2" multiple v-model="envIds">
-                <option v-for="env in envList" :key="env.Id" :value="env.Id">
-                  {{ env.Name }}
-                </option>
-              </select>
+              <Select2
+                v-model="envIds"
+                :options="envList"
+                :settings="{ multiple: true }"
+              />
+            </div>
+
+            <div class="col-12">
+              <button class="btn btn-primary" @click="saveProjet()">
+                Save
+              </button>
             </div>
           </div>
         </div>
       </div>
 
       <div class="col-sm-6">
-        <div class="card card-info">
+        <div class="card card-info" v-if="!IsNewProjet">
           <div class="card-header">
             <h3 class="card-title">Version</h3>
 
@@ -127,7 +126,7 @@
           </div>
         </div>
 
-        <div class="card card-secondary" v-if="IsParentProjet">
+        <div class="card card-secondary" v-if="IsParentProjet && !IsNewProjet">
           <div class="card-header">
             <h3 class="card-title">Sub-projet</h3>
 
@@ -210,10 +209,6 @@
           </div>
         </div>
       </div>
-
-      <div class="col-12">
-        <button class="btn btn-primary" @click="saveProjet()">Save</button>
-      </div>
     </div>
   </section>
 </template>
@@ -221,7 +216,7 @@
 <script>
 import VersionService from "../Services/VersionService.js";
 import { useRoute } from "vue-router";
-
+import { showSuccessToast, showInfoToast } from "../Utils/SharedControl.js";
 export default {
   name: "Projet",
 
@@ -249,6 +244,14 @@ export default {
         this.targetProjet = this.projetList.find(
           (p) => p.Id == this.targetProjet.Id
         );
+
+        const envIds = new Set();
+        if(this.targetProjet.EnvironmentList?.length>0){
+          this.targetProjet.EnvironmentList.map(x=> envIds.add(x.Id));
+        }
+
+        this.envIds = Array.from(envIds);
+     
       }
     },
     async GetDeploimentHistory() {
@@ -260,7 +263,13 @@ export default {
       }
     },
     async GetEnvironment() {
-      this.envList = await VersionService.GetEnvironmentList();
+      var envList = await VersionService.GetEnvironmentList();
+      this.envList = envList.map((p) => {
+        return {
+          id: p.Id,
+          text: p.Name,
+        };
+      });
     },
     async AddVersion() {
       if (this.VersionNumber != null && !this.IsNewProjet) {
@@ -270,33 +279,45 @@ export default {
         });
 
         if (result > 0) {
-          alert("create version successfully");
+          showSuccessToast("Success", "Version create successfully");
+
+          var versionList = await VersionService.GetVersionByProjetId({
+            ParentId: !this.IsParentProjet ? this.targetProjet.Id : null,
+            ProjetId: this.IsParentProjet ? this.targetProjet.Id : null,
+          });
+
+          if (versionList.length > 0) {
+            this.targetProjet.Versions = versionList;
+          }
         }
       }
     },
     async saveProjet() {
       let ProjetEnvironments = [];
       for (let envId of this.envIds) {
-        ProjetEnvironments.push(envId);
+        ProjetEnvironments.push(parseInt(envId));
       }
 
       if (this.targetProjet.Name != null && this.targetProjet.Name != "") {
         let result = await VersionService.CreateProjet({
-          Id: this.targetProjet.Id,
-
+          Id: this.targetProjet.Id ?? 0,
           Name: this.targetProjet.Name,
           ParentId: this.targetProjet.ParentId,
           Description: this.targetProjet.Description,
           EnvIds: ProjetEnvironments,
         });
-        if (result > 0) alert("Saved successfully");
+        if (result > 0) {
+          showSuccessToast("Success", "Projet create successfully");
+        }
       } else {
-        // TODO add error message
+        showInfoToast(
+          "Warning",
+          "Some information is not correcte please retry"
+        );
       }
     },
   },
   mounted() {
-    this.$sharedControl.initializeSelect2();
     const route = useRoute();
     if (route.query != null && route.query.Id != null && route.query.Id > 0) {
       this.targetProjet.Id = parseInt(route.query.Id);
@@ -308,9 +329,11 @@ export default {
   },
   computed: {
     MainProjetList: function () {
-      return this.projetList.filter(
-        (p) => p.ParentId == null && p.Id != this.targetProjet.Id
-      );
+      return this.projetList
+        .filter((p) => p.ParentId == null && p.Id != this.targetProjet.Id)
+        .map((p) => {
+          return { id: p.Id, text: p.Name };
+        });
     },
     IsNewProjet() {
       return !(this.targetProjet.Id != null && this.targetProjet.Id > 0);
@@ -321,7 +344,9 @@ export default {
       );
     },
     SubProjetList() {
-      return this.projetList.filter((p) => p.ParentId == this.targetProjet.Id);
+      return this.projetList.filter(
+        (p) => p.ParentId != null && p.ParentId == this.targetProjet.Id
+      );
     },
   },
 };
