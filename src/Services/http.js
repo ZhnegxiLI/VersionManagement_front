@@ -1,10 +1,10 @@
 import axios from 'axios'
 
-import {showErrorToast} from '../Utils/SharedControl'
+import { showErrorToast } from '../Utils/SharedControl'
 
 //创建axios的一个实例 
 var instance = axios.create({
-    baseURL:'https://localhost:44350/',// todo set to the baseUrl from env
+    baseURL: process.env.VUE_APP_URL,// todo set to the baseUrl from env
     timeout: 6000
 })
 
@@ -15,13 +15,13 @@ instance.interceptors.request.use(function (config) {
     return config;
 }, function (error) {
     // 对请求错误做些什么
-    
+
     return Promise.reject(error);
 });
 
 //----------------- 二、响应拦截器 忽略
 instance.interceptors.response.use(function (response) {
-    
+
     return response.data;
 }, function (error) {
 
@@ -39,10 +39,10 @@ export default function (method, url, data = null) {
         return instance.get(url, { params: data })
     } else if (method == 'delete') {
         return instance.delete(url, { params: data })
-    }else if(method == 'put'){
-        return instance.put(url,data)
-    }else{
-        console.error('未知的method'+method)
+    } else if (method == 'put') {
+        return instance.put(url, data)
+    } else {
+        console.error('未知的method' + method)
         return false
     }
 }

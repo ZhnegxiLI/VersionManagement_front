@@ -300,7 +300,7 @@ export default {
 
       if (this.targetProjet.Name != null && this.targetProjet.Name != "") {
         let result = await VersionService.CreateProjet({
-          Id: this.targetProjet.Id ?? 0,
+          Id: this.targetProjet.Id,
           Name: this.targetProjet.Name,
           ParentId: this.targetProjet.ParentId,
           Description: this.targetProjet.Description,
