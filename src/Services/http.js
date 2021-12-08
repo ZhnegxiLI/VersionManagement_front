@@ -15,7 +15,7 @@ instance.interceptors.request.use(function (config) {
     return config;
 }, function (error) {
     // 对请求错误做些什么
-
+    showErrorToast('Some errors occur', 'There are some errors occur, please contact our technical team or retry later');
     return Promise.reject(error);
 });
 

@@ -1,25 +1,23 @@
 <template>
   <ContentHeader>Projet</ContentHeader>
-
   <section class="content">
-     <template v-for="projet in ProjetVersionList" :key="projet.Id">
-    <div class="card">
-      <div class="card-header">
-        <h3 class="card-title">Projects</h3>
+    <template v-for="projet in ProjetVersionList" :key="projet.Id">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">Projects</h3>
 
-        <div class="card-tools">
-          <button
-            type="button"
-            class="btn btn-tool"
-            data-card-widget="collapse"
-            title="Collapse"
-          >
-            <i class="fas fa-minus"></i>
-          </button>
+          <div class="card-tools">
+            <button
+              type="button"
+              class="btn btn-tool"
+              data-card-widget="collapse"
+              title="Collapse"
+            >
+              <i class="fas fa-minus"></i>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="card-body p-0">
-       
+        <div class="card-body p-0">
           <h3 class="mainProjetTitle">
             <router-link
               :to="{
@@ -75,14 +73,13 @@
               </tr>
             </tbody>
           </table>
+        </div>
       </div>
-    </div>
-         </template>
+    </template>
   </section>
 </template>
 <script>
 import VersionServices from "../Services/VersionService.js";
-//import Modal from "../components/Modal.vue";
 export default {
   data: function () {
     return {
@@ -150,8 +147,8 @@ export default {
   },
 };
 </script>
-<style>
-  .mainProjetTitle{
-    text-align: center;
-  }
+<style scoped>
+.mainProjetTitle {
+  text-align: center;
+}
 </style>

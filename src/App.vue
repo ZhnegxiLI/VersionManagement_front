@@ -6,11 +6,6 @@
       <Sidebar></Sidebar>
 
       <div class="content-wrapper">
-        <!-- <ContentHeader></ContentHeader>
-
-        <section class="content">
-        
-        </section> -->
         <div class="container-fluid">
           <router-view />
         </div>
@@ -23,10 +18,7 @@
 </template>
 
 <script>
-
 import Preloader from "./dashboard/Preloader.vue";
-//import ContentHeader from "./dashboard/ContentHeader.vue"
-//import ExampleForm from "./components/ExampleForm.vue"
 import Navbar from "./dashboard/Navbar.vue";
 import Sidebar from "./dashboard/Sidebar.vue";
 import Footer from "./dashboard/Footer.vue";
@@ -36,12 +28,11 @@ export default {
   name: "App",
   components: {
     Preloader,
-    // ExampleForm,
     Navbar,
     Sidebar,
     Footer,
     ControlSidebar,
-  }
+  },
 };
 </script>
 <style>

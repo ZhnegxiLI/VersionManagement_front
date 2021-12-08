@@ -50,7 +50,7 @@
               <label>Environment</label>
               <Select2
                 v-model="envIds"
-                :options="envList"
+                :options="FormatedEnvList"
                 :settings="{ multiple: true }"
               />
             </div>
@@ -219,7 +219,6 @@ import { useRoute } from "vue-router";
 import { showSuccessToast, showInfoToast } from "../Utils/SharedControl.js";
 export default {
   name: "Projet",
-
   data() {
     return {
       projetList: [],
@@ -241,17 +240,14 @@ export default {
       this.projetList = await VersionService.GetProjetList(null);
 
       if (this.targetProjet.Id != null && this.targetProjet.Id > 0) {
-        this.targetProjet = this.projetList.find(
-          (p) => p.Id == this.targetProjet.Id
-        );
+        this.targetProjet = this.projetList.find((p) => p.Id == this.targetProjet.Id);
 
         const envIds = new Set();
-        if(this.targetProjet.EnvironmentList?.length>0){
-          this.targetProjet.EnvironmentList.map(x=> envIds.add(x.Id));
+        if (this.targetProjet.EnvironmentList?.length > 0) {
+          this.targetProjet.EnvironmentList.map((x) => envIds.add(x.Id));
         }
 
         this.envIds = Array.from(envIds);
-     
       }
     },
     async GetDeploimentHistory() {
@@ -263,13 +259,7 @@ export default {
       }
     },
     async GetEnvironment() {
-      var envList = await VersionService.GetEnvironmentList();
-      this.envList = envList.map((p) => {
-        return {
-          id: p.Id,
-          text: p.Name,
-        };
-      });
+      this.envList = await VersionService.GetEnvironmentList();
     },
     async AddVersion() {
       if (this.VersionNumber != null && !this.IsNewProjet) {
@@ -294,9 +284,7 @@ export default {
     },
     async saveProjet() {
       let ProjetEnvironments = [];
-      for (let envId of this.envIds) {
-        ProjetEnvironments.push(parseInt(envId));
-      }
+      ProjetEnvironments = this.envIds.map(p=>parseInt(p));
 
       if (this.targetProjet.Name != null && this.targetProjet.Name != "") {
         let result = await VersionService.CreateProjet({
@@ -318,6 +306,7 @@ export default {
     },
   },
   mounted() {
+    // Get projet id 
     const route = useRoute();
     if (route.query != null && route.query.Id != null && route.query.Id > 0) {
       this.targetProjet.Id = parseInt(route.query.Id);
@@ -328,6 +317,16 @@ export default {
     this.GetEnvironment();
   },
   computed: {
+    // Get formated environment list
+    FormatedEnvList: function(){
+      return this.envList.map(p=>{
+        return {
+          id: p.Id,
+          text: p.Name
+        };
+      })
+    },
+    // Get mainprojet list 
     MainProjetList: function () {
       return this.projetList
         .filter((p) => p.ParentId == null && p.Id != this.targetProjet.Id)
@@ -335,14 +334,17 @@ export default {
           return { id: p.Id, text: p.Name };
         });
     },
+    // Check if projet is already create or not
     IsNewProjet() {
       return !(this.targetProjet.Id != null && this.targetProjet.Id > 0);
     },
+    // Check if projet is parent projet
     IsParentProjet() {
       return !(
         this.targetProjet.ParentId != null && this.targetProjet.ParentId > 0
       );
     },
+    // Get subprojet list 
     SubProjetList() {
       return this.projetList.filter(
         (p) => p.ParentId != null && p.ParentId == this.targetProjet.Id
@@ -351,7 +353,7 @@ export default {
   },
 };
 </script>
-<style>
+<style scoped>
 .form-group {
   text-align: initial;
 }
