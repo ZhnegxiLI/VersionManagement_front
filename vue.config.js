@@ -12,4 +12,5 @@ module.exports = {
     //查看CSS属于哪个css文件
     sourceMap: true,
   },
+  publicPath: process.env.VUE_APP_BASE_PATH,
 }
